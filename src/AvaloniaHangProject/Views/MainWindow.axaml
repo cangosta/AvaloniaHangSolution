@@ -8,7 +8,7 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="GuidedTour.AvaloniaExample"
         TransparencyLevelHint="AcrylicBlur"
-        Background="Transparent"
+        Background="White"
         ExtendClientAreaToDecorationsHint="True">
 
     <Design.DataContext>
@@ -22,6 +22,7 @@
                 <Setter Property="BorderThickness" Value="2" />
                 <Setter Property="CornerRadius" Value="6" />
                 <Setter Property="Margin" Value="10" />
+                <Setter Property="Background" Value="#ccccccff" />
             </Style>
             <Style Selector="StackPanel">
                 <Setter Property="Margin" Value="25" />
@@ -36,7 +37,11 @@
             <Border Name="Window-Panel">
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal">
-                        <Button Content="Open Window Example" Command="{Binding OpenGuidedTourExampleCommand}" />
+                        <TabControl Name="Tabs">
+                            <TabItem Name="Circle" Header="Circle" VerticalContentAlignment="Center">
+                                <TextBlock Text="I am in the circle page !" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            </TabItem>
+                        </TabControl>
                     </StackPanel>
                 </StackPanel>
             </Border>
