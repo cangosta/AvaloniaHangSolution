@@ -31,11 +31,4 @@
         <PackageReference Include="Avalonia.ReactiveUI" Version="$(AvaloniaVersion)" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(MicrosoftSourceLinkGitHub)" PrivateAssets="All" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Compile Update="Views\BaseGuidedTourDialogWindow.axaml.cs">
-        <DependentUpon>BaseGuidedTourDialogWindow.axaml</DependentUpon>
-        <SubType>Code</SubType>
-      </Compile>
-    </ItemGroup>
 </Project>

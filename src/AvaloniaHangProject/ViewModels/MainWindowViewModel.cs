@@ -1,56 +1,53 @@
-﻿using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Media;
-using Avalonia.Threading;
-using AvaloniaHangProject.Views;
+using Avalonia.Controls.Primitives.PopupPositioning;
 using ReactiveUI;
 
 namespace AvaloniaHangProject.ViewModels {
     public class MainWindowViewModel : ReactiveObject {
-        private BaseGuidedTourDialogWindow guidedTourDialogWindow;
-
         public MainWindowViewModel(Window parent) {
-            OpenGuidedTourExampleCommand = ReactiveCommand.Create(
+            ButtonClickExampleCommand = ReactiveCommand.Create(
                 () => {
-                    guidedTourDialogWindow?.Close();
-
-                    // To fix "Cannot re-show a closed window" we create a new window
-                    guidedTourDialogWindow = new BaseGuidedTourDialogWindow(parent) { MinHeight = 100,  MinWidth = 100,};
+                     var menu = new ContextMenu();
                     
-                    var innerContent = new Border() { BorderBrush = new SolidColorBrush(Colors.Red), BorderThickness = new Thickness(3)};
+                     menu.Items = new MenuItem[] {
+                         new MenuItem() { Header = "Option 1", Command = Option1Command },
+                         new MenuItem() { Header = "Option 2", Command = Option2Command },
+                     };
                     
-                    // This code the task continuation below is just to ilustrate the use case. The bug happen even if we comment these lines.
-                    Task.Delay(TimeSpan.FromSeconds(1)).ContinueWith((t) => {
-                        Dispatcher.UIThread.InvokeAsync(() => {
-                            ((Border)guidedTourDialogWindow.Content).Width = 400;
-                            ((Border)guidedTourDialogWindow.Content).Height = 400;
-                        });
-                    });
-                    
-                    innerContent.LayoutUpdated += (sender, args) => {
-                        guidedTourDialogWindow.SetDialogStartupLocation();
-                        
-                        Debug.WriteLine("MainWindowViewModel#LayoutUpdated");
-                    };
-
-                    guidedTourDialogWindow.Content = innerContent;
-                    guidedTourDialogWindow.ShowWindow();
-                    guidedTourDialogWindow.SetDialogStartupLocation();
+                     menu.PlacementAnchor = PopupAnchor.TopLeft;
+                     menu.PlacementGravity = PopupGravity.BottomRight;
+                     menu.PlacementMode = PlacementMode.AnchorAndGravity;
+                     menu.PlacementRect = new Rect(100, 100, 1, 1);
+            
+                    menu.Open(parent);
                 }
             );
 
             CloseGuidedTourExampleCommand = ReactiveCommand.Create(
                 () => {
-                    guidedTourDialogWindow.Close();
                 }
             );
+            
+            Option1Command = ReactiveCommand.Create(Option1);
+            Option2Command = ReactiveCommand.Create(Option2);
         }
 
-        public ICommand OpenGuidedTourExampleCommand { get; }
+        public ICommand ButtonClickExampleCommand { get; }
         public ICommand CloseGuidedTourExampleCommand { get; }
+        
+        private ICommand Option1Command { get; }
+        private ICommand Option2Command { get; }
+        
+        private static void Option1()
+        {
+            System.Diagnostics.Debug.WriteLine("Option1 clicked");
+        }
+        
+        private static void Option2()
+        {
+            System.Diagnostics.Debug.WriteLine("Option2 clicked");
+        }
     }
 }
