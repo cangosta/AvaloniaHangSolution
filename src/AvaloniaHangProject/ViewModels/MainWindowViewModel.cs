@@ -21,7 +21,7 @@ namespace AvaloniaHangProject.ViewModels {
                                 MinHeight = 500, MinWidth = 500, Position = new PixelPoint(500, 500),
                             };
 
-                            sfWindow.Content = new Button() { Name = "Test Button", Content = "Continue", Command = OnContinueButtonCommand(parent, sfWindow.Close)};
+                            sfWindow.Content = new Button() { Name = "Test Button", Content = "Continue", Command = OnContinueButtonCommand(sfWindow, sfWindow.Close)};
 
                             return sfWindow;
                         }).Result;
