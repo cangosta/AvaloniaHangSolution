@@ -66,10 +66,6 @@ namespace AvaloniaHangProject.Views {
             }
         }
 
-        public static void ShowDialogSync(this Window window, Window owner) {
-             window.ShowDialogSync<bool>(owner);
-        }
-
         public static Task<T> ShowDialogSync<T>(this Window window, Window owner) {
             return Helper.ShowDialogSync<T>(window, owner);
         }

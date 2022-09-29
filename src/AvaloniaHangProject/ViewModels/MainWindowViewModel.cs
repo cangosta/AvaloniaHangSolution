@@ -19,7 +19,7 @@ namespace AvaloniaHangProject.ViewModels {
                     Task.Run(() => { // Created this task just to simulate what is happening in the application
 
                         var submitFeedbackWindow = Dispatcher.UIThread.InvokeAsync(() => {
-                            var sfWindow = new DialogWindow(parent) {
+                            var sfWindow = new DialogWindow() {
                                 MinHeight = 500, MinWidth = 500, Position = new PixelPoint(500, 500),
                             };
 
@@ -55,7 +55,7 @@ namespace AvaloniaHangProject.ViewModels {
                 Task.Run(() => {
                     // Create progress dialog
                     var progressWindow = Dispatcher.UIThread.InvokeAsync(() => {
-                        var pWindow = new DialogWindow(parent) {
+                        var pWindow = new DialogWindow() {
                             MinHeight = 500,
                             MinWidth = 500,
                             Position = new PixelPoint(500, 500),
@@ -79,10 +79,6 @@ namespace AvaloniaHangProject.ViewModels {
                 });
 
             });
-        }
-
-        public ICommand OnClickButtonCommand2(Window parent) {
-            return ReactiveCommand.Create(() => { });
         }
     }
 }
