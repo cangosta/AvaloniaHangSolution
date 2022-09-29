@@ -1,31 +1,40 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
+using Avalonia.Threading;
 using AvaloniaHangProject.Views;
 using ReactiveUI;
 
 namespace AvaloniaHangProject.ViewModels {
     public class MainWindowViewModel : ReactiveObject {
-        private List<DialogWindow> dialogWindows = new List<DialogWindow>();
         private int captionsCounter = 0;
 
         public MainWindowViewModel(Window parent) {
-            OpenWindowCommand = ReactiveCommand.Create(
+            OpenSubmitFeedbackWindowCommand = ReactiveCommand.Create(
                 () => {
-                    var activeTab = ((MainWindow)parent).GetActiveTab();
-                    var dialogWindow = new DialogWindow(parent, activeTab) {
-                        MinHeight = 500,
-                        MinWidth = 500,
-                        Position = new PixelPoint(500, 500)
-                    };
-                    var innerContent = new Border() { BorderBrush = new SolidColorBrush(Colors.Red), BorderThickness = new Thickness(3)};
+                    Task.Run(() => { // Created this task just to simulate what is happening in the application
 
-                    dialogWindow.Content = innerContent;
-                    dialogWindow.ShowWindow();
+                        var submitFeedbackWindow = Dispatcher.UIThread.InvokeAsync(() => {
+                            var sfWindow = new DialogWindow(parent) {
+                                MinHeight = 500, MinWidth = 500, Position = new PixelPoint(500, 500),
+                            };
 
-                    dialogWindows.Add(dialogWindow);
+                            sfWindow.Content = new Button() { Name = "Test Button", Content = "Continue", Command = OnContinueButtonCommand(parent, sfWindow.Close)};
+
+                            return sfWindow;
+                        }).Result;
+
+
+                        var res = Dispatcher.UIThread.InvokeAsync(() => submitFeedbackWindow.ShowDialogSync<bool>(parent)).Result;
+
+                        // create fake modal dialog
+                        //var keepWorkingWindow
+
+                    });
                 }
             );
 
@@ -36,8 +45,44 @@ namespace AvaloniaHangProject.ViewModels {
                 });
         }
 
-        public ICommand OpenWindowCommand { get; }
+        public ICommand OpenSubmitFeedbackWindowCommand { get; }
 
         public ICommand AddTabCommand { get; }
+
+        public ICommand OnContinueButtonCommand(Window parent, Action submitFeedbackClose) {
+            // TODO check who is the parent window in the SS scenario? the submitFeedbackWindow or the AppWindow? Right now I'm using the app window
+            return ReactiveCommand.Create(() => {
+                Task.Run(() => {
+                    // Create progress dialog
+                    var progressWindow = Dispatcher.UIThread.InvokeAsync(() => {
+                        var pWindow = new DialogWindow(parent) {
+                            MinHeight = 500,
+                            MinWidth = 500,
+                            Position = new PixelPoint(500, 500),
+                        };
+
+                        pWindow.Content = new TextBlock() { Text = "Progress dialog "};
+
+                        return pWindow;
+                    }).Result;
+
+                    // set timer to close progress dialog
+
+                    var showProgressWindowTask = Dispatcher.UIThread.InvokeAsync(() => progressWindow.ShowDialogSync<bool>(parent));
+
+                    Task.Delay(1000).ContinueWith((t) => Dispatcher.UIThread.InvokeAsync(() => progressWindow.Close()));
+
+                    var res = showProgressWindowTask.Result;
+
+                    // close the submit feedback window
+                    Dispatcher.UIThread.InvokeAsync(() => submitFeedbackClose.Invoke());
+                });
+
+            });
+        }
+
+        public ICommand OnClickButtonCommand2(Window parent) {
+            return ReactiveCommand.Create(() => { });
+        }
     }
 }

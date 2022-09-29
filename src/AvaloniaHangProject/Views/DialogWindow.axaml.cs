@@ -6,9 +6,9 @@ using Avalonia.Layout;
 using Avalonia.Markup.Xaml;
 
 namespace AvaloniaHangProject.Views {
-    public class DialogWindow : Window {
-        private Control topLevelView;
-        private IDisposable[] disposableShowAndHideEventHandlers;
+    public class DialogWindow : MainWindow {
+
+        public bool IsModal { get; private set; }
 
         public DialogWindow() {
             InitializeComponent();
@@ -17,9 +17,8 @@ namespace AvaloniaHangProject.Views {
             VerticalContentAlignment = VerticalAlignment.Center;
         }
 
-        public DialogWindow(Window aggregatorWindow, Control topLevelView) : this() {
+        public DialogWindow(Window aggregatorWindow) : this() {
             ParentWindow = aggregatorWindow;
-            this.topLevelView = topLevelView;
         }
 
         private void InitializeComponent() {
@@ -28,53 +27,32 @@ namespace AvaloniaHangProject.Views {
 
         public Window ParentWindow { get; }
 
-        public static IDisposable AddShownEventHandler(Control view, Action action) {
-            void OnAttachedToVisualTree(object sender, VisualTreeAttachmentEventArgs e) => action();
-            view.AttachedToVisualTree += OnAttachedToVisualTree;
-            return Disposable.Create(() => view.AttachedToVisualTree -= OnAttachedToVisualTree);
+        private void SafeShow(Window ownerWindow = null) {
+            SafeShowCore(ownerWindow);
         }
 
-        public static IDisposable AddHiddenEventHandler(Control view, Action action) {
-            void OnDettachedToVisualTree(object sender, VisualTreeAttachmentEventArgs e) => action();
-            view.DetachedFromVisualTree += OnDettachedToVisualTree;
-            return Disposable.Create(() => view.DetachedFromVisualTree -= OnDettachedToVisualTree);
-        }
+        private static bool IsWindowValid(Window window) => window?.IsVisible == true && !(window is DialogWindow dialog);
 
-        private void SubscribeTopLevelViewShowHideEvents() {
-            if (disposableShowAndHideEventHandlers == null && topLevelView != null) {
-                disposableShowAndHideEventHandlers = new[] {
-                    AddShownEventHandler(topLevelView, OnTopLevelViewShown),
-                    AddHiddenEventHandler(topLevelView, OnTopLevelViewHidden),
-                };
+
+        private void SafeShowCore(Window ownerWindow = null) {
+            if (IsWindowValid(ownerWindow)) {
+                ShowInTaskbar = false;
+                Show(ownerWindow);
+            } else {
+                Show();
             }
         }
 
 
-        private void UnsubscribeTopLevelViewShowHideEvents() {
-            if (disposableShowAndHideEventHandlers != null) {
-                foreach (IDisposable x in disposableShowAndHideEventHandlers) {
-                    x.Dispose();
-                }
-                disposableShowAndHideEventHandlers = null;
-            }
+        public void DisplayModal(bool applicationWideModal) {
+            ShowWindow(true);
         }
 
-        private void OnTopLevelViewShown() {
-            Show(ParentWindow);
+        private void ShowWindow(bool showAsModal) {
+            IsModal = showAsModal;
+
+            SafeShow();
         }
 
-        private void OnTopLevelViewHidden() {
-            Hide();
-        }
-
-        public void ShowWindow() {
-            SubscribeTopLevelViewShowHideEvents();
-            Show(ParentWindow);
-        }
-
-        protected override void OnClosed(EventArgs e) {
-            UnsubscribeTopLevelViewShowHideEvents();
-            base.OnClosed(e);
-        }
     }
 }
