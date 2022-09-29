@@ -1,15 +1,12 @@
 using System.Collections;
-using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
 using AvaloniaHangProject.ViewModels;
 
 namespace AvaloniaHangProject.Views {
     public class MainWindow : Window {
         private readonly TabControl tabs;
-        private Control currentTab = null;
         public MainWindow() {
             InitializeComponent();
 
@@ -23,14 +20,6 @@ namespace AvaloniaHangProject.Views {
 
         private void InitializeComponent() {
             AvaloniaXamlLoader.Load(this);
-        }
-
-        private void OnSelectedTabChanged(object sender, SelectionChangedEventArgs e) {
-            this.currentTab = ((IControl)e.AddedItems[0]).GetLogicalDescendants().OfType<Button>().FirstOrDefault();
-        }
-
-        public Control GetActiveTab() {
-            return this.currentTab;
         }
 
         public void AddTab(int index) {
