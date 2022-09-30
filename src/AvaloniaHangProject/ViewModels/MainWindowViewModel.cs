@@ -12,29 +12,18 @@ namespace AvaloniaHangProject.ViewModels {
         private int captionsCounter = 0;
 
         public MainWindowViewModel(Window parent) {
-            OpenSubmitFeedbackWindowCommand = ReactiveCommand.Create(
-                () => {
-                    Task.Run(() => { // Created this task just to simulate what is happening in the application
+            OpenSubmitFeedbackWindowCommand = ReactiveCommand.CreateFromTask(
+                async () => {
+                    var submitFeedbackWindow = new DialogWindow() {
+                        MinHeight = 500, MinWidth = 500, Position = new PixelPoint(500, 500),
+                    };
 
-                        var submitFeedbackWindow = Dispatcher.UIThread.InvokeAsync(() => {
-                            var sfWindow = new DialogWindow() {
-                                MinHeight = 500, MinWidth = 500, Position = new PixelPoint(500, 500),
-                            };
+                    submitFeedbackWindow.Content = new Button() { Name = "Test Button", Content = "Continue", Command = OnContinueButtonCommand(submitFeedbackWindow, submitFeedbackWindow.Close)};
 
-                            sfWindow.Content = new Button() { Name = "Test Button", Content = "Continue", Command = OnContinueButtonCommand(sfWindow, sfWindow.Close)};
+                    await submitFeedbackWindow.ShowDialog<bool>(parent);
 
-                            return sfWindow;
-                        }).Result;
-
-
-                        var res = Dispatcher.UIThread.InvokeAsync(() => submitFeedbackWindow.ShowDialogSync<bool>(parent)).Result;
-
-                        // create fake modal dialog
-                        //var keepWorkingWindow
-
-                    });
-                }
-            );
+                    
+                });
 
 
             AddTabCommand = ReactiveCommand.Create(
@@ -48,34 +37,25 @@ namespace AvaloniaHangProject.ViewModels {
         public ICommand AddTabCommand { get; }
 
         public ICommand OnContinueButtonCommand(Window parent, Action submitFeedbackClose) {
-            // TODO check who is the parent window in the SS scenario? the submitFeedbackWindow or the AppWindow? Right now I'm using the app window
-            return ReactiveCommand.Create(() => {
-                Task.Run(() => {
-                    // Create progress dialog
-                    var progressWindow = Dispatcher.UIThread.InvokeAsync(() => {
-                        var pWindow = new DialogWindow() {
-                            MinHeight = 500,
-                            MinWidth = 500,
-                            Position = new PixelPoint(500, 500),
-                        };
 
-                        pWindow.Content = new TextBlock() { Text = "Progress dialog "};
+            return ReactiveCommand.CreateFromTask(async () => {
 
-                        return pWindow;
-                    }).Result;
+                // Create progress dialog
+                var progressWindow = new DialogWindow() {
+                    MinHeight = 500, MinWidth = 500, Position = new PixelPoint(500, 500),
+                };
 
-                    // set timer to close progress dialog
+                progressWindow.Content = new TextBlock() { Text = "Progress dialog " };
 
-                    var showProgressWindowTask = Dispatcher.UIThread.InvokeAsync(() => progressWindow.ShowDialogSync<bool>(parent));
+                var dialogResult = progressWindow.ShowDialog<bool>(parent);
 
-                    Task.Delay(1000).ContinueWith((t) => Dispatcher.UIThread.InvokeAsync(() => progressWindow.Close()));
+                await Task.Delay(1000);
 
-                    var res = showProgressWindowTask.Result;
+                progressWindow.Close(false);
 
-                    // close the submit feedback window
-                    Dispatcher.UIThread.InvokeAsync(() => submitFeedbackClose.Invoke());
-                });
+                await dialogResult;
 
+                submitFeedbackClose();
             });
         }
     }
