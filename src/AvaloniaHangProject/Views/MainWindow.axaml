@@ -36,7 +36,7 @@
             <Border Name="Window-Panel">
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal">
-                        <Button Content="Open Window Example" Command="{Binding OpenGuidedTourExampleCommand}" />
+                        <Button Content="Open Window Example" Command="{Binding OpenSimpleWindowCommand}" />
                     </StackPanel>
                 </StackPanel>
             </Border>
