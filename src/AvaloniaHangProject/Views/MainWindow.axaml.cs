@@ -28,8 +28,8 @@ namespace AvaloniaHangProject.Views {
 
             var view = new Button() {
                 Name = "view",
-                Content = "Open SubmitFeedback Window Example",
-                Command = ((MainWindowViewModel)this.DataContext).OpenSubmitFeedbackWindowCommand
+                Content = "Start Open And Close Windows",
+                Command = ((MainWindowViewModel)this.DataContext).StartOpenCloseWindowsCommand
             };
 
             var tab = new TabItem() {
