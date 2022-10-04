@@ -18,20 +18,17 @@ namespace AvaloniaHangProject.ViewModels {
                         // Created this task just to simulate what is happening in the application
 
                         for (int i = 0; i <= 10; i++) {
-                            var exampleWindow = Dispatcher.UIThread.InvokeAsync(() => {
-                                var sfWindow = new DialogWindow() {
-                                    MinHeight = 500, MinWidth = 500, Position = new PixelPoint(500, 500),
-                                };
-
-                                sfWindow.Content = new TextBlock() { Text = "Test Content" };
-
-                                return sfWindow;
+                            var exampleWindow = Dispatcher.UIThread.InvokeAsync(() => new DialogWindow() {
+                                MinHeight = 500,
+                                MinWidth = 500,
+                                Position = new PixelPoint(500, 500),
+                                Content = new TextBlock() { Text = "Test Content" }
                             }).Result;
 
                             var exampleWindowTask = Dispatcher.UIThread.InvokeAsync(() => exampleWindow.ShowDialogSync<bool>(parent));
 
-                                Task.Delay(1000).ContinueWith((t) =>
-                                    Dispatcher.UIThread.InvokeAsync(() => exampleWindow.Close()));
+                            Task.Delay(1000).ContinueWith((t) =>
+                                Dispatcher.UIThread.InvokeAsync(() => exampleWindow.Close()));
 
                             exampleWindowTask.Wait();
 
