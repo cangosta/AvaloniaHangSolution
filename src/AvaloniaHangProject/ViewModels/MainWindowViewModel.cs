@@ -22,7 +22,7 @@ namespace AvaloniaHangProject.ViewModels {
                             Content = new TextBlock() { Text = "Test Content" }
                         };
 
-                        var exampleWindowTask = exampleWindow.ShowDialogSync<bool>(parent);
+                        var exampleWindowTask = exampleWindow.ShowDialog<bool>(parent);
 
                         await Task.Delay(1000);
 
