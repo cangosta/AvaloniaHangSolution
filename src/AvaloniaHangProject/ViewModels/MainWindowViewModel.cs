@@ -12,29 +12,28 @@ namespace AvaloniaHangProject.ViewModels {
         private int captionsCounter = 0;
 
         public MainWindowViewModel(Window parent) {
-            StartOpenCloseWindowsCommand = ReactiveCommand.Create(
-                () => {
-                    Task.Run(() => {
-                        // Created this task just to simulate what is happening in the application
+            StartOpenCloseWindowsCommand = ReactiveCommand.CreateFromTask(
+                async () => {
 
-                        for (int i = 0; i <= 10; i++) {
-                            var exampleWindow = Dispatcher.UIThread.InvokeAsync(() => new DialogWindow() {
-                                MinHeight = 500,
-                                MinWidth = 500,
-                                Position = new PixelPoint(500, 500),
-                                Content = new TextBlock() { Text = "Test Content" }
-                            }).Result;
+                    // Created this task just to simulate what is happening in the application
+                    for (int i = 0; i <= 10; i++) {
+                        var exampleWindow = new DialogWindow() {
+                            MinHeight = 500,
+                            MinWidth = 500,
+                            Position = new PixelPoint(500, 500),
+                            Content = new TextBlock() { Text = "Test Content" }
+                        };
 
-                            var exampleWindowTask = Dispatcher.UIThread.InvokeAsync(() => exampleWindow.ShowDialogSync<bool>(parent));
+                        var exampleWindowTask = exampleWindow.ShowDialogSync<bool>(parent);
 
-                            Task.Delay(1000).ContinueWith((t) =>
-                                Dispatcher.UIThread.InvokeAsync(() => exampleWindow.Close()));
+                        await Task.Delay(1000);
 
-                            exampleWindowTask.Wait();
+                        exampleWindow.Close();
 
-                            Task.Delay(1000).Wait();
-                        }
-                    });
+                        await exampleWindowTask;
+
+                        await Task.Delay(1000);
+                    }
                 }
             );
 
