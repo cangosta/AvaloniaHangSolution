@@ -14,8 +14,6 @@ namespace AvaloniaHangProject.ViewModels {
         public MainWindowViewModel(Window parent) {
             StartOpenCloseWindowsCommand = ReactiveCommand.CreateFromTask(
                 async () => {
-
-                    // Created this task just to simulate what is happening in the application
                     for (int i = 0; i <= 10; i++) {
                         var exampleWindow = new DialogWindow() {
                             MinHeight = 500,
